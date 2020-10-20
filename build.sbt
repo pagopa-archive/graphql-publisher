@@ -7,6 +7,8 @@ ThisBuild / wartremoverErrors ++= Warts.all
 ThisBuild / parallelExecution in Test := false
 ThisBuild / fork in Test := false
 ThisBuild / resolvers += "Cloudera Repo" at "https://repository.cloudera.com/artifactory/cloudera-repos/"
+ThisBuild / startYear := Some(2020)
+ThisBuild / licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"))
 
 Docker / packageName := "services/graphql-publisher"
 Docker / daemonUser := "daemon"
@@ -59,4 +61,4 @@ lazy val root = (project in file("."))
       scalaTest % Test,
       h2Db % Test
     ) ++ loggingDependencies.map(dep => dep % Compile)
-  ).enablePlugins(AshScriptPlugin).enablePlugins(DockerPlugin)
+  ).enablePlugins(AshScriptPlugin, DockerPlugin, AutomateHeaderPlugin)
