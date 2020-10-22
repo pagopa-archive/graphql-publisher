@@ -16,7 +16,6 @@
 
 package it.pagopa.dbtographql
 
-import java.io.File
 import java.time.Duration
 import java.time.temporal.TemporalAmount
 
@@ -28,8 +27,6 @@ import it.pagopa.dbtographql.sessionmanagement.{SessionManagement, WithLogin}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.reflect.io.Directory
-
 @SuppressWarnings(
   Array(
     "org.wartremover.warts.Any",
@@ -38,10 +35,11 @@ import scala.reflect.io.Directory
 )
 class SessionManagementSpec extends AnyWordSpec with Matchers with SessionManagement with WithLogin with DatabaseMetadataMgmt with DatabaseDataMgmt with SchemaDefinition with SchemaLoginDefinition {
 
-  val PARENT_DIR: String = "./data-dir"
-  val DATABASE_NAME: String = "test" // it's better if you write db name in small letters
-  val DATABASE_DIR: String = s"$PARENT_DIR/$DATABASE_NAME" // FYI, this is string interpolation
-  val DATABASE_URL: String = s"jdbc:h2:$DATABASE_DIR"
+  locally {
+    val _ = Class.forName("org.h2.Driver")
+  }
+
+  val DATABASE_URL: String = "jdbc:h2:mem:db2"
 
   override val getConnectionUri: String = DATABASE_URL
 
@@ -100,7 +98,6 @@ class SessionManagementSpec extends AnyWordSpec with Matchers with SessionManage
       val _ = logout(token)
       val _ = sessions.size must be(0)
       val _ = connection.close()
-      val _ = new Directory(new File(PARENT_DIR)).deleteRecursively()
     }
   }
 }

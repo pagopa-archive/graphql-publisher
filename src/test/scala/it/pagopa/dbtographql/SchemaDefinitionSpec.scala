@@ -16,7 +16,6 @@
 
 package it.pagopa.dbtographql
 
-import java.io.File
 import java.sql.DriverManager
 
 import io.circe.Json
@@ -31,7 +30,6 @@ import sangria.marshalling.circe._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import scala.reflect.io.Directory
 
 @SuppressWarnings(
   Array(
@@ -47,12 +45,13 @@ import scala.reflect.io.Directory
 )
 class SchemaDefinitionSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll with DatabaseMetadataMgmt with DatabaseDataMgmt with SchemaDefinition {
 
+  locally {
+    val _ = Class.forName("org.h2.Driver")
+  }
+
   implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val PARENT_DIR: String = "./data-dir"
-  val DATABASE_NAME: String = "test" // it's better if you write db name in small letters
-  val DATABASE_DIR: String = s"$PARENT_DIR/$DATABASE_NAME" // FYI, this is string interpolation
-  val DATABASE_URL: String = s"jdbc:h2:$DATABASE_DIR"
+  val DATABASE_URL: String = "jdbc:h2:mem:db1"
 
   protected def generateToken(username: String, password: String, database: String): String = ???
   protected def getConnection(uri: String, username: String, password: String): java.sql.Connection = ???
@@ -201,7 +200,6 @@ class SchemaDefinitionSpec extends AnyWordSpec with Matchers with BeforeAndAfter
       }
 
       connection.close()
-      val _ = new Directory(new File(PARENT_DIR)).deleteRecursively()
     }
   }
 
@@ -238,7 +236,6 @@ class SchemaDefinitionSpec extends AnyWordSpec with Matchers with BeforeAndAfter
       val _ = values.length must be(1)
 
       connection.close()
-      val _ = new Directory(new File(PARENT_DIR)).deleteRecursively()
     }
   }
 
@@ -274,7 +271,6 @@ class SchemaDefinitionSpec extends AnyWordSpec with Matchers with BeforeAndAfter
       val values = ((result \\ "data").head \\ "TEST_TIME").flatMap(j => j \\ "TIMESTAMP_TYPE").map(_.as[String]).map(_.getOrElse(false))
       val _ = values.length must be(2)
       connection.close()
-      val _ = new Directory(new File(PARENT_DIR)).deleteRecursively()
     }
   }
 
@@ -310,7 +306,6 @@ class SchemaDefinitionSpec extends AnyWordSpec with Matchers with BeforeAndAfter
       val values = ((result \\ "data").head \\ "TEST_DATE").flatMap(j => j \\ "DATE_TYPE").map(_.as[String]).map(_.getOrElse(false))
       val _ = values.length must be(2)
       connection.close()
-      val _ = new Directory(new File(PARENT_DIR)).deleteRecursively()
     }
   }
 }
