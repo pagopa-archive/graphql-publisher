@@ -17,13 +17,11 @@
 package it.pagopa.dbtographql.sessionmanagement
 
 import java.sql.Connection
-
-import cats.implicits.catsSyntaxEq
-import it.pagopa.dbtographql.database.DatabaseMetadataModel.DatabaseMetadata
-import it.pagopa.dbtographql.schema.Ctx
-import it.pagopa.dbtographql.sessionmanagement.SessionManagement.{sessions, _}
+import java.util.Date
+import ConnectionManagement._
 import org.slf4j.LoggerFactory
-import sangria.schema.Schema
+
+import scala.util.{Failure, Success, Try}
 
 @SuppressWarnings(
   Array(
@@ -36,40 +34,34 @@ trait WithLogin {
 
   def getConnectionUri: String
 
-  protected def getConnection(uri: String, username: String, password: String): Connection
+  protected def getConnection(uri: String, username: String, password: String): Try[Connection]
 
   protected def generateToken(username: String, password: String, database: String): String
 
-  protected def getSessionUsername(token: String): String
-
-  protected def getDatabaseMetadata(connection: Connection, database: String): DatabaseMetadata
-
-  protected def generateSchema(metadata: DatabaseMetadata): Schema[Ctx, Any]
+  protected def decryptInfoFromToken(token: String): (String, String, String, Date)
 
   protected def login(username: String, password: String, database: String): String = {
+    logger.info(s"About to login the user $username")
     val connection = getConnection(getConnectionUri, username, password)
-    val oldToken = sessions.keys.find(token => getSessionUsername(token) === username)
-    oldToken.fold({
-      val token = generateToken(username, password, database)
-      val databaseMetadata = getDatabaseMetadata(connection, database)
-      val schema = generateSchema(databaseMetadata)
-      sessions = sessions + (token -> SessionEntry(schema, connection))
-      logger.info(s"User $username logged in. Total number of sessions = ${sessions.size.toString}")
-      token
-    })(oldToken => {
-      connection.close() //I reuse the old one
-      logger.info(s"User $username already logged in. Closing the new connection ${connection.hashCode().toString}, returning the old token and keeping the old connection ${sessions(oldToken).connection.hashCode.toString}. Total number of sessions = ${sessions.size.toString}")
-      oldToken
-    })
+    connection match {
+      case Success(connection) =>
+        logger.info(s"User $username logged in")
+        val token = generateToken(username, password, database)
+        connections = connections + (token -> connection)
+        token
+      case Failure(exception) =>
+        logger.error(s"User $username login failed: ${exception.getMessage}")
+        "login"
+    }
   }
 
   protected def logout(token: String): String = {
-    val session = sessions.get(token)
-    session.fold(s"User ${getSessionUsername(token)} already logged out")(s => {
-      s.connection.close()
-      sessions = sessions - token
-      s"User ${getSessionUsername(token)} logged out"
+    val (username, _, _, _) = decryptInfoFromToken(token)
+    connections.get(token).fold(())(c => {
+      c.close()
+      connections = connections - token
     })
+    s"User $username logged out"
   }
 
 }
