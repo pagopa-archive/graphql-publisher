@@ -18,7 +18,8 @@ package it.pagopa.dbtographql.sessionmanagement
 
 import java.sql.Connection
 import java.util.Date
-import ConnectionManagement._
+
+import it.pagopa.dbtographql.sessionmanagement.ConnectionManagement._
 import org.slf4j.LoggerFactory
 
 import scala.util.{Failure, Success, Try}

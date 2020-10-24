@@ -22,10 +22,10 @@ import java.time.temporal.TemporalAmount
 import com.nimbusds.jwt.EncryptedJWT
 import it.pagopa.dbtographql.database.{DatabaseDataMgmt, DatabaseMetadataMgmt}
 import it.pagopa.dbtographql.schema.{SchemaDefinition, SchemaLoginDefinition}
+import it.pagopa.dbtographql.sessionmanagement.ConnectionManagement._
 import it.pagopa.dbtographql.sessionmanagement.{ConnectionManagement, WithLogin}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import ConnectionManagement._
 
 @SuppressWarnings(
   Array(
