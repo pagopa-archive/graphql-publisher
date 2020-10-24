@@ -22,8 +22,8 @@ import java.time.temporal.TemporalAmount
 import com.nimbusds.jwt.EncryptedJWT
 import it.pagopa.dbtographql.database.{DatabaseDataMgmt, DatabaseMetadataMgmt}
 import it.pagopa.dbtographql.schema.{SchemaDefinition, SchemaLoginDefinition}
-import it.pagopa.dbtographql.sessionmanagement.ConnectionManagement._
-import it.pagopa.dbtographql.sessionmanagement.{ConnectionManagement, WithLogin}
+import it.pagopa.dbtographql.sessionmanagement.SessionManagement._
+import it.pagopa.dbtographql.sessionmanagement.{SessionManagement, WithLogin}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -33,7 +33,7 @@ import org.scalatest.wordspec.AnyWordSpec
     "org.wartremover.warts.AsInstanceOf"
   )
 )
-class ConnectionManagementSpec extends AnyWordSpec with Matchers with ConnectionManagement with WithLogin with DatabaseMetadataMgmt with DatabaseDataMgmt with SchemaDefinition with SchemaLoginDefinition {
+class ConnectionManagementSpec extends AnyWordSpec with Matchers with SessionManagement with WithLogin with DatabaseMetadataMgmt with DatabaseDataMgmt with SchemaDefinition with SchemaLoginDefinition {
 
   locally {
     val _ = Class.forName("org.h2.Driver")

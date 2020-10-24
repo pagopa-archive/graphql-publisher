@@ -29,7 +29,7 @@ import com.nimbusds.jwt.{EncryptedJWT, JWTClaimsSet}
 import it.pagopa.dbtographql.common.PemUtils
 import it.pagopa.dbtographql.database.DatabaseMetadataModel.DatabaseMetadata
 import it.pagopa.dbtographql.schema.Ctx
-import it.pagopa.dbtographql.sessionmanagement.ConnectionManagement.connections
+import it.pagopa.dbtographql.sessionmanagement.SessionManagement.connections
 import org.apache.thrift.transport.TTransportException
 import org.slf4j.LoggerFactory
 import sangria.schema.Schema
@@ -44,9 +44,9 @@ import scala.util.{Failure, Success, Try}
     "org.wartremover.warts.Throw"
   )
 )
-trait ConnectionManagement {
+trait SessionManagement {
 
-  private val logger = LoggerFactory.getLogger(classOf[ConnectionManagement])
+  private val logger = LoggerFactory.getLogger(classOf[SessionManagement])
 
   def getConnectionUri: String
 
@@ -162,12 +162,6 @@ trait ConnectionManagement {
     }
   }
 
-  protected def getSessionUsername(token: String): String = {
-    val jwt = EncryptedJWT.parse(token)
-    jwt.decrypt(decrypter)
-    jwt.getJWTClaimsSet.getClaim("username").asInstanceOf[String]
-  }
-
 }
 
 @SuppressWarnings(
@@ -175,6 +169,6 @@ trait ConnectionManagement {
     "org.wartremover.warts.Var"
   )
 )
-object ConnectionManagement {
+object SessionManagement {
   var connections: Map[String, Connection] = Map.empty[String, Connection]
 }

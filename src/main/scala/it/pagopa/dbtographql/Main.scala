@@ -34,7 +34,7 @@ import it.pagopa.dbtographql.common.ApplicationConfiguration
 import it.pagopa.dbtographql.database.{DatabaseDataMgmt, DatabaseMetadataMgmt}
 import it.pagopa.dbtographql.http.TemplatedFileAndResourceDirectives
 import it.pagopa.dbtographql.schema.{Ctx, SchemaDefinition, SchemaLoginDefinition}
-import it.pagopa.dbtographql.sessionmanagement.ConnectionManagement
+import it.pagopa.dbtographql.sessionmanagement.SessionManagement
 import org.slf4j.LoggerFactory
 import sangria.ast.Document
 import sangria.execution.Executor
@@ -56,7 +56,7 @@ import scala.util.{Failure, Success}
     "org.wartremover.warts.MutableDataStructures"
   )
 )
-object Main extends App with ConnectionManagement with DatabaseMetadataMgmt with DatabaseDataMgmt with SchemaDefinition with SchemaLoginDefinition with TemplatedFileAndResourceDirectives with CorsSupport {
+object Main extends App with SessionManagement with DatabaseMetadataMgmt with DatabaseDataMgmt with SchemaDefinition with SchemaLoginDefinition with TemplatedFileAndResourceDirectives with CorsSupport {
 
   override def getConnectionUri: String = ApplicationConfiguration.jdbcUrl
 
