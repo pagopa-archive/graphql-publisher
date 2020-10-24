@@ -33,7 +33,7 @@ import org.scalatest.wordspec.AnyWordSpec
     "org.wartremover.warts.AsInstanceOf"
   )
 )
-class SessionManagementSpec extends AnyWordSpec with Matchers with SessionManagement with WithLogin with DatabaseMetadataMgmt with DatabaseDataMgmt with SchemaDefinition with SchemaLoginDefinition {
+class ConnectionManagementSpec extends AnyWordSpec with Matchers with SessionManagement with WithLogin with DatabaseMetadataMgmt with DatabaseDataMgmt with SchemaDefinition with SchemaLoginDefinition {
 
   locally {
     val _ = Class.forName("org.h2.Driver")
@@ -60,10 +60,10 @@ class SessionManagementSpec extends AnyWordSpec with Matchers with SessionManage
     }
   }
 
-  "Session management" must {
+  "Connection management" must {
     "work successfully" in {
       val token = login("", "", "TEST")
-      val connection = sessions(token).connection
+      val connection = connections(token)
       val stm = connection.createStatement
       val sql =
         """
@@ -87,16 +87,10 @@ class SessionManagementSpec extends AnyWordSpec with Matchers with SessionManage
           |   );
           |""".stripMargin
       val _ = stm.execute(sql)
-      val _ = sessions.size must be(1)
-      val _ = getSchema(token).renderPretty.length must be > 20
-      val oldConnection = sessions(token).connection
-      oldConnection.close()
-      val _ = sessions.size must be(1)
-      val _ =  getSchema(token).renderPretty.length must be > 20
-      val newConnection = sessions(token).connection
-      val _ = oldConnection.hashCode() must not be newConnection.hashCode()
+      val _ = connections.size must be(1)
+      val _ = getSchema(token).foreach(_.renderPretty.length must be > 20)
       val _ = logout(token)
-      val _ = sessions.size must be(0)
+      val _ = connections.size must be(0)
       val _ = connection.close()
     }
   }

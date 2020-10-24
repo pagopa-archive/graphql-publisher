@@ -78,9 +78,9 @@ object Main extends App with SessionManagement with DatabaseMetadataMgmt with Da
     val schema = getSchema(token)
     complete(
       Executor.execute(
-        schema,
+        schema.fold(_ => generateLoginSchema, identity),
         query,
-        Ctx(getSessionConnection(token)),
+        Ctx(getConnectionFromToken(token).fold(t =>None, c => Some(c))),
         variables = variables
       )
     )

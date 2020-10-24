@@ -65,7 +65,7 @@ trait DatabaseMetadataMgmt {
   }
 
   protected def getDatabaseMetadata(connection: Connection, database: String): DatabaseMetadataModel.DatabaseMetadata = {
-    logger.info(s"getDbInfo => about to use connection ${connection.hashCode().toString}")
+    logger.info(s"About to get metadata for the database $database")
     val metaData = connection.getMetaData
     val resultSet = metaData.getTables(null, null, null, Array("TABLE"))
     val tables = resultSetToList(resultSet).filter(r => r(1)._2.asInstanceOf[String] === database).map(r => r(2)._2.asInstanceOf[String])
