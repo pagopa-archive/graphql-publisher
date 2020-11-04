@@ -76,6 +76,11 @@ object Main extends App with SessionManagement with DatabaseMetadataMgmt with Da
 
   def executeGraphQL(token: String, query: Document, variables: Json): StandardRoute = {
     val schema = getSchema(token)
+    schema match {
+      case Failure(exception) =>
+        logger.error(s"Wrong schema:\n ${exception.getMessage}")
+      case Success(_) =>
+    }
     complete(
       Executor.execute(
         schema.fold(_ => generateLoginSchema, identity),
