@@ -34,7 +34,8 @@ import scala.collection.immutable.ListMap
     "org.wartremover.warts.Nothing",
     "org.wartremover.warts.OptionPartial",
     "org.wartremover.warts.AsInstanceOf",
-    "org.wartremover.warts.Recursion"
+    "org.wartremover.warts.Recursion",
+    "org.wartremover.warts.Throw",
   )
 )
 trait SchemaDefinitionSupportSqlGen extends SchemaDefinitionSupportCommons with DatabaseMetadataMgmt {
@@ -149,6 +150,8 @@ trait SchemaDefinitionSupportSqlGen extends SchemaDefinitionSupportCommons with 
           fields.map(generate(_)).mkString("(", " OR ", ")")
         case ObjectField("_and", ObjectValue(fields, _, _), _, _) =>
           fields.map(generate(_)).mkString("(", " AND ", ")")
+        case _ =>
+          throw new Exception("It shouldn't be here")
       }
     }
 

@@ -40,7 +40,8 @@ import scala.concurrent.duration.Duration
     "org.wartremover.warts.Throw",
     "org.wartremover.warts.AnyVal",
     "org.wartremover.warts.TraversableOps",
-    "org.wartremover.warts.AsInstanceOf"
+    "org.wartremover.warts.AsInstanceOf",
+    "org.wartremover.warts.GlobalExecutionContext"
   )
 )
 class SchemaDefinitionSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll with DatabaseMetadataMgmt with DatabaseDataMgmt with SchemaDefinition {
