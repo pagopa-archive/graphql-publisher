@@ -43,6 +43,7 @@ trait DatabaseDataMgmt {
       case Types.BIGINT => resultSet.getLong(index)
       case Types.TIMESTAMP => resultSet.getTimestamp(index)
       case Types.DATE => resultSet.getDate(index)
+      case 2003 => resultSet.getObject(index) //MAP
     }
 
   def getQueryResult(query: String, connection: Connection): QueryResult = {

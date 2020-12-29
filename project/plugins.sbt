@@ -10,6 +10,6 @@ addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.0.0")
 
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.7.6")
+addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.8.0")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.6.0")

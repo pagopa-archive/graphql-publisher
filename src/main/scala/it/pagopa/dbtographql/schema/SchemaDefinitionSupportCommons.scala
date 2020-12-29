@@ -91,6 +91,7 @@ trait SchemaDefinitionSupportCommons {
     case Types.DATE => DateType
     case Types.TIMESTAMP => TimestampType
     case Types.BIT => BooleanType
+    case 2003 => StringType
   }
 
   protected val numericCompOperators: Map[String, String] = Map(("_eq", "="), ("_neq", "!="), ("_gt", ">"), ("_lt", "<"), ("_gte", ">="), ("_lte", "<="), ("_in", "in"), ("_nin", "not in"), ("_is_null", "is null"))
