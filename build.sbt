@@ -1,6 +1,6 @@
 import Dependencies._
 
-ThisBuild / scalaVersion := "2.13.4"
+ThisBuild / scalaVersion := "2.13.6"
 ThisBuild / organization := "it.pagopa"
 ThisBuild / organizationName := "Pagopa S.p.A."
 ThisBuild / wartremoverErrors ++= Warts.all
@@ -9,8 +9,6 @@ ThisBuild / fork in Test := false
 ThisBuild / resolvers += "Cloudera Repo" at "https://repository.cloudera.com/artifactory/cloudera-repos/"
 ThisBuild / startYear := Some(2020)
 ThisBuild / licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"))
-Global / semanticdbEnabled := true
-Global / semanticdbVersion := "4.4.0"
 
 Docker / packageName := "services/graphql-publisher"
 Docker / daemonUser := "daemon"
