@@ -16,16 +16,16 @@
 
 package it.pagopa.dbtographql.schema
 
-import java.sql.Types
-
 import cats.implicits.catsSyntaxEq
 import it.pagopa.dbtographql.database.DatabaseMetadataMgmt
 import it.pagopa.dbtographql.database.DatabaseMetadataModel.TableMetadata
 import org.slf4j.LoggerFactory
 import sangria.ast._
+import sangria.renderer.QueryRenderer
 import sangria.schema.InputObjectType.DefaultInput
 import sangria.schema.{Context, InputObjectType, ObjectType}
 
+import java.sql.Types
 import scala.collection.immutable.ListMap
 
 @SuppressWarnings(
@@ -55,7 +55,7 @@ trait SchemaDefinitionSupportSqlGen extends SchemaDefinitionSupportCommons with 
     val orderBy = ctx.argOpt[ListMap[String, Option[String]]]("order_by")
     val orderByClause = s"${orderBy.fold("")(_.map(p => s"${p._1} ${p._2.get}").mkString("order by ", ",", ""))}"
     val distinctOn = ctx.argOpt[String]("distinct_on")
-    val selectedFields = ctx.astFields(0).selections.map(_.renderCompact)
+    val selectedFields = ctx.astFields(0).selections.map(QueryRenderer.renderCompact(_))
     val selectedColumns = if (allColumns)
       schemaTable.tableMetadata.columns
     else
@@ -93,9 +93,9 @@ trait SchemaDefinitionSupportSqlGen extends SchemaDefinitionSupportCommons with 
           "distinct "
         else "")
     }${
-      f.arguments(0).value.renderPretty
+      QueryRenderer.renderPretty(f.arguments(0).value)
     })")
-    val sqlAggregatedFields = List(sqlAvgAggregatedFields, sqlMaxAggregatedFields, sqlMinAggregatedFields, sqlCountAggregatedFields).filter(!_.isEmpty)
+    val sqlAggregatedFields = List(sqlAvgAggregatedFields, sqlMaxAggregatedFields, sqlMinAggregatedFields, sqlCountAggregatedFields).filter(_.nonEmpty)
     s"""
        | ${sqlAggregatedFields.mkString(",")}
        |""".stripMargin
@@ -123,14 +123,14 @@ trait SchemaDefinitionSupportSqlGen extends SchemaDefinitionSupportCommons with 
           case "_is_null" if !field.value.asInstanceOf[BooleanValue].value =>
             "is not null"
           case "_in" =>
-            val numbers = field.value.asInstanceOf[ListValue].values.map(_.renderPretty).mkString("(", ",", ")")
+            val numbers = field.value.asInstanceOf[ListValue].values.map(QueryRenderer.renderPretty(_)).mkString("(", ",", ")")
             s"${stringCompOperators(field.name)} $numbers"
           case "_nin" =>
             s"${stringCompOperators(field.name)} (1, 100, 1000)"
           case _ if columnType === Types.TIMESTAMP | columnType === Types.DATE =>
-            s"${stringCompOperators(field.name)} ${field.value.renderPretty.replace("\"", "'")}"
+            s"${stringCompOperators(field.name)} ${QueryRenderer.renderPretty(field.value).replace("\"", "'")}"
           case _ =>
-            s"${stringCompOperators(field.name)} ${field.value.renderPretty}"
+            s"${stringCompOperators(field.name)} ${QueryRenderer.renderPretty(field.value)}"
         }
         s"$name $sqlOp"
       }).mkString(" AND ")
